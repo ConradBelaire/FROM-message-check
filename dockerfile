@@ -1,3 +1,4 @@
 FROM python:latest
-COPY main.py /
-CMD [ "python", "./main.py" ]
+WORKDIR /code
+COPY ./code /code/
+CMD [ "python", "main.py" ]
