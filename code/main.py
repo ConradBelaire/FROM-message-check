@@ -1,10 +1,9 @@
 import re
 
-words = [
-	"skeleton",
-	"enemy",
-	"weak foe",
-	"dog"]
+file = open("words.txt", "r")
+content = file.read()
+words = content.split("\n")[:-1]
+file.close()
 
 regex = [
 	re.compile("^Seek ([\w\s]+)$"),
