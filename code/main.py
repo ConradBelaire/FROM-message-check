@@ -6,6 +6,7 @@ words = content.split("\n")[:-1]
 file.close()
 
 regex = [
+	re.compile("^([\w\s]+) O, ([\w\s]+)$"),
 	re.compile("^Seek ([\w\s]+)$"),
 	re.compile("^([\w\s]+) ahead$"),
 	re.compile("^No ([\w\s]+) ahead$"),
@@ -33,6 +34,15 @@ val = input()
 for r in regex:
 	m = r.match(val)
 	if m:
+		#Check for the **** O, **** template
+		if r == regex[0]:
+			if m.group(1) == m.group(2):
+				if m.group(1) in words:
+					print("Match!")
+					print(m)
+					print(m.group(1))
+			break
+
 		if m.group(1) in words:
 			print("Match!")
 			print(m)
