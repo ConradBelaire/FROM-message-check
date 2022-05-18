@@ -5,7 +5,7 @@ content = file.read()
 words = content.split("\n")[:-1]
 file.close()
 
-regex = [
+templates = [
 	re.compile("^([\w\s]+) O, ([\w\s]+)$"),
 	re.compile("^Seek ([\w\s]+)$"),
 	re.compile("^([\w\s]+) ahead$"),
@@ -28,22 +28,66 @@ regex = [
 	re.compile("^If only I had a ([\w\s]+)[.]{3}$"),
 	re.compile("^Likely ([\w\s]+)$")]
 
+conjs = [
+	re.compile("^([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,!]+) and then ([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,!]+) or ([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,!]+) but ([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,!]+) therefore ([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,!]+) in short ([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,!]+) except ([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,!]+) by the way ([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,![:punct:]]+) so to speak ([\w\s\?.,!]+)$"),
+	re.compile("^([\w\s\?.,!]+) all the more ([\w\s\?.,!]+)$"),
+	#re.compile("^([\w\s\?.,!]+), ([\w\s\?.,!]+)$")
+	]
+
 print("Input:")
 val = input()
 
-for r in regex:
-	m = r.match(val)
-	if m:
-		#Check for the **** O, **** template
-		if r == regex[0]:
-			if m.group(1) == m.group(2):
-				if m.group(1) in words:
-					print("Match!")
-					print(m)
-					print(m.group(1))
-			break
 
-		if m.group(1) in words:
-			print("Match!")
-			print(m)
-			print(m.group(1))
+flag = [False, False]
+
+for c in conjs:
+	m = c.match(val)
+	if not m:
+		continue
+
+	if c.groups > 1:
+		msg = [m.group(1), m.group(2)]
+	else:
+		msg = [m.group(1), ""]
+
+	for t in templates:
+		p = t.match(msg[0])
+		if p:
+			#Check for the **** O, **** template
+			if t == templates[0]:
+				if p.group(1) == p.group(2):
+					if p.group(1) in words:
+						flag[0] = True
+				break
+
+			if p.group(1) in words:
+				flag[0] = True
+
+	if c.groups == 1:
+		flag[1] = True
+	else:
+		for t in templates:
+			p = t.match(msg[1])
+			if p:
+				#Check for the **** O, **** template
+				if t == templates[0]:
+					if p.group(1) == p.group(2):
+						if p.group(1) in words:
+							flag[1] = True
+					break
+
+				if p.group(1) in words:
+					flag[1] = True
+
+if flag[0] and flag[1]:
+	print("Match!")
+	print(msg[0])
+	print(msg[1])
